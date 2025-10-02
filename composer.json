@@ -1,0 +1,11 @@
+{
+    "name": "libra/bx-api-helper",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Libra\\BxApiHelper\\": "lib/"
+        }
+    },
+    "require": {}
+}
