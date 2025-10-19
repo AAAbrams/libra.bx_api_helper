@@ -12,6 +12,12 @@ class ElementObject extends LibraElementObject
         }
     }
 
+    public array $price {
+        set {
+            $this->price = $value;
+        }
+    }
+
     /**
      * @param int $propertyId
      * @return mixed
