@@ -6,7 +6,7 @@ namespace Libra\BxApiHelper\IblockProperties;
 
 use Bitrix\Iblock\ElementTable;
 use Bitrix\Iblock\PropertyEnumerationTable;
-use Bitrix\Main\Entity\DataManager;
+use Bitrix\Main\ORM\Data\DataManager;
 use Bitrix\Main\ORM\Fields\FloatField;
 use Bitrix\Main\ORM\Fields\IntegerField;
 use Bitrix\Main\ORM\Fields\Relations\Reference;
