@@ -33,22 +33,14 @@ class ElementCollection extends LibraElementCollection
     }
 
     /**
-     * @param Closure $filter
+     * @param Closure|null $queryFilter
      * @return $this
-     * @throws ArgumentException
-     * @throws SystemException
-     * @throws ObjectPropertyException
+     * @throws ArgumentException|ObjectPropertyException|SystemException
      */
-    public function withProperties(Closure $filter): self
+    public function withProperties(?Closure $queryFilter = null): self
     {
 
-        $propertyCollection = PropertyHelper::getPropertyCollection($this->iblockDto->id);
-
-        /**
-         * @var PropertyCollection $propertyCollection
-         */
-        $propertyCollection = $filter($propertyCollection);
-
+        $propertyCollection = PropertyHelper::getPropertyCollection($this->iblockDto->id, $queryFilter);
 
         $props = new ElementPropertyValueHelper($this->iblockDto);
 

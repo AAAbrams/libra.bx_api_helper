@@ -12,6 +12,7 @@ use Bitrix\Main\ORM\Fields\FloatField;
 use Bitrix\Main\ORM\Fields\IntegerField;
 use Bitrix\Main\ORM\Fields\StringField;
 use Bitrix\Main\SystemException;
+use Libra\BxApiHelper\IblockProperties\LibraPropertyQuery;
 use Libra\BxApiHelper\IblockProperties\PropertyHelper;
 use Libra\BxApiHelper\IblockProperties\PropertyObject;
 
@@ -66,8 +67,10 @@ class SimpleProperties extends PropertiesEntity
                 ->configurePrimary(true),
         ];
 
-        $properties = PropertyHelper::getPropertyCollection($this->iblockDto->id)
-            ->simpleOnly();
+        $properties = PropertyHelper::getPropertyCollection(
+            $this->iblockDto->id,
+            static fn(LibraPropertyQuery $propQuery) => $propQuery->where('MULTIPLE', 'N')
+        );
 
          foreach ($properties as $property) {
             if (empty($property->getCode())) continue;
