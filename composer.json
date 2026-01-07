@@ -1,10 +1,16 @@
 {
     "name": "libra/bx-api-helper",
-    "type": "library",
+    "version": "1.0",
+    "type": "bitrix-module",
     "license": "MIT",
     "autoload": {
         "psr-4": {
             "Libra\\BxApiHelper\\": "lib/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Libra\\BxApiHelperTest\\": "tests/"
         }
     },
     "require": {}

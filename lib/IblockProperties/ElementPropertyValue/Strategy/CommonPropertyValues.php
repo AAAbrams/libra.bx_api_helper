@@ -5,42 +5,31 @@ declare(strict_types=1);
 namespace Libra\BxApiHelper\IblockProperties\ElementPropertyValue\Strategy;
 
 
+use Bitrix\Main\ORM\Objectify\Collection;
 use Bitrix\Main\ORM\Query\Query;
 use Closure;
 
 class CommonPropertyValues implements FormatValuesInterface
 {
-    public function buildQuery(Query $query, array $propertyIds): Query
+    public static function getValues(Query $query, array $propertyIds, array $elementIds): array
     {
-        $query
+        /**
+         * @var Collection $valueCollection
+         */
+        $valueCollection = $query
             ->setSelect([
                 'IBLOCK_ELEMENT_ID',
                 'IBLOCK_PROPERTY_ID',
                 'VALUE',
             ])
-            ->whereIn('IBLOCK_PROPERTY_ID', $propertyIds);
+            ->whereIn('IBLOCK_PROPERTY_ID', $propertyIds)
+            ->whereIn('IBLOCK_ELEMENT_ID', $elementIds)
+            ->fetchCollection();
 
-        return $query;
+        return array_reduce($valueCollection->getAll(), static::getFormatValuesHandler(), []);
     }
 
-    public function formatValues(array $values): array
-    {
-        /*$select = [
-            'IBLOCK_ELEMENT_ID',
-            'IBLOCK_PROPERTY_ID',
-            'VALUE',
-        ];
-
-        $values = $this->simplePropsEntity->getDataClass()::query()
-            ->setSelect($select)
-            ->whereIn('IBLOCK_PROPERTY_ID', $this->props)
-            ->whereIn('IBLOCK_ELEMENT_ID', $this->els)
-            ->fetchAll();*/
-
-        return array_reduce($values, $this->getFormatValuesHandler(), []);
-    }
-
-    protected function getFormatValuesHandler(): Closure
+    protected static function getFormatValuesHandler(): Closure
     {
         return function (array $acc, array $value) {
             $acc[$value['IBLOCK_ELEMENT_ID']][$value['IBLOCK_PROPERTY_ID']] = $value['VALUE'];

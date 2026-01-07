@@ -8,7 +8,7 @@ use Closure;
 
 class MultiplePropertyValues extends CommonPropertyValues
 {
-    protected function getFormatValuesHandler(): Closure
+    protected static function getFormatValuesHandler(): Closure
     {
         return function (array $acc, array $value) {
             $acc[$value['IBLOCK_ELEMENT_ID']][$value['IBLOCK_PROPERTY_ID']][] = $value['VALUE'];

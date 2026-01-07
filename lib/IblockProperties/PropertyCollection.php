@@ -53,4 +53,20 @@ class PropertyCollection extends LibraPropertyCollection
             return $collection;
         }, new self());
     }
+
+    public function enumTypeProperties(): self
+    {
+        $cloned = clone $this;
+
+        $cloned->fill(['PROPERTY_TYPE']);
+
+        return array_reduce($cloned->getAll(), function (PropertyCollection $collection, PropertyObject $property) {
+            if (
+                $property->get('PROPERTY_TYPE') === \Bitrix\Iblock\PropertyTable::TYPE_LIST
+            ) {
+                $collection->add($property);
+            }
+            return $collection;
+        }, new self());
+    }
 }

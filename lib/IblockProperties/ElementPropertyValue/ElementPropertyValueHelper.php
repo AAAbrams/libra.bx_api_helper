@@ -14,7 +14,10 @@ use Libra\BxApiHelper\IblockProperties\PropertyCollection;
 
 class ElementPropertyValueHelper
 {
-    private FormatValuesInterface $simpleValuesStrategy;
+    /**
+     * @var class-string<FormatValuesInterface>
+     */
+    private string $simpleValuesStrategy;
     private SimpleProperties $simplePropsEntity;
     private MultipleProperties $multiPropsEntity;
 
@@ -29,35 +32,30 @@ class ElementPropertyValueHelper
 
     public function getFormattedQueryResult(PropertyCollection $propertyCollection, array $elementIds): array
     {
+        if (count($elementIds) === 0) {
+            return [];
+        }
+
         $simple = $propertyCollection->simpleOnly();
-        $simplePropsValues = [];
+        $resultPropertiesValues = [];
+
         if ($simple->count() > 0) {
-            $simplePropsQuery = $this->simpleValuesStrategy->buildQuery(
+            $resultPropertiesValues = $this->simpleValuesStrategy::getValues(
                 $this->simplePropsEntity->getModelClass()::query(),
-                $simple->getIdList()
+                $simple->getIdList(),
+                $elementIds
             );
-
-            $simpleProps = $simplePropsQuery
-                ->whereIn('IBLOCK_ELEMENT_ID', $elementIds)
-                ->fetchAll();
-
-            $simplePropsValues = $this->simpleValuesStrategy->formatValues($simpleProps);
         }
 
         $multiple = $propertyCollection->multipleOnly();
         $multiPropsValues = [];
         if ($multiple->count() > 0) {
-            $multiPropsStrategy = new MultiplePropertyValues();
-            $multiPropsQuery = $multiPropsStrategy->buildQuery(
+            $multiPropsValues = MultiplePropertyValues::getValues(
                 $this->multiPropsEntity->getModelClass()::query(),
-                $multiple->getIdList()
+                $multiple->getIdList(),
+                $elementIds
             );
 
-            $multiProps = $multiPropsQuery
-                ->whereIn('IBLOCK_ELEMENT_ID', $elementIds)
-                ->fetchAll();
-
-            $multiPropsValues = $multiPropsStrategy->formatValues($multiProps);
             foreach ($multiPropsValues as &$elementMultiProps) {
                 $elementMultiProps = array_reduce($multiple->getIdList(), function (array $acc, int $propertyId) {
                     if (!array_key_exists($propertyId, $acc)) {
@@ -66,11 +64,9 @@ class ElementPropertyValueHelper
                     return $acc;
                 }, $elementMultiProps);
             }
-
         }
 
-
-        foreach ($simplePropsValues as $elementId => &$simpleProperties) {
+        foreach ($resultPropertiesValues as $elementId => &$simpleProperties) {
             $multiProps = $multiPropsValues[$elementId] ?? [];
             if (count($multiProps) === 0) {
                 continue;
@@ -80,15 +76,18 @@ class ElementPropertyValueHelper
             }
         }
 
-        return $simplePropsValues;
+        return $resultPropertiesValues;
     }
 
-    private function getSimpleValuesStrategy(): FormatValuesInterface
+    /**
+     * @return class-string<FormatValuesInterface>
+     */
+    private function getSimpleValuesStrategy(): string
     {
         return match ($this->iblockDto->version) {
-            1 => new CommonPropertyValues(),
-            2 => new SimplePropertyValues(),
-            default => new NullPropertyValues(),
+            1 => CommonPropertyValues::class,
+            2 => SimplePropertyValues::class,
+            default => NullPropertyValues::class,
         };
     }
 }

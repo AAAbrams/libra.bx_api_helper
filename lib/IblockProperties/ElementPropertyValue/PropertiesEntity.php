@@ -72,7 +72,7 @@ abstract class PropertiesEntity
 
         $fields = array_filter(
             ElementPropertyTable::getMap(),
-            fn (Field $field) => $field->getName() !== 'VALUE_TYPE'
+            static fn (Field $field) => $field->getName() !== 'VALUE_TYPE'
         );
 
         $tableName = $this->getTableName();

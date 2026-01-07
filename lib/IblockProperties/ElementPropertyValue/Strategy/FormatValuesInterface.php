@@ -8,6 +8,5 @@ use Bitrix\Main\ORM\Query\Query;
 
 interface FormatValuesInterface
 {
-    public function buildQuery(Query $query, array $propertyIds): Query;
-    public function formatValues(array $values);
+    public static function getValues(Query $query, array $propertyIds, array $elementIds): array;
 }

@@ -5,12 +5,12 @@ namespace Libra\BxApiHelper\IblockProperties\ElementPropertyValue;
 use Bitrix\Iblock\PropertyEnumerationTable;
 use Bitrix\Iblock\PropertyTable;
 use Bitrix\Main\ArgumentException;
-use Bitrix\Main\Entity\Query\Join;
-use Bitrix\Main\Entity\ReferenceField;
 use Bitrix\Main\ORM\Entity;
 use Bitrix\Main\ORM\Fields\FloatField;
 use Bitrix\Main\ORM\Fields\IntegerField;
+use Bitrix\Main\ORM\Fields\Relations\Reference;
 use Bitrix\Main\ORM\Fields\StringField;
+use Bitrix\Main\ORM\Query\Join;
 use Bitrix\Main\SystemException;
 use Libra\BxApiHelper\IblockProperties\LibraPropertyQuery;
 use Libra\BxApiHelper\IblockProperties\PropertyHelper;
@@ -110,7 +110,7 @@ class SimpleProperties extends PropertiesEntity
         $this->fields[] = new $fieldClass($propColumnName);
 
         if ($prop->getPropertyType() === PropertyTable::TYPE_LIST) {
-            $this->fields[] = new ReferenceField(
+            $this->fields[] = new Reference(
                 "{$propColumnName}_ENUM_REF",
                 PropertyEnumerationTable::class,
                 Join::on("this.$propColumnName", 'ref.ID')
